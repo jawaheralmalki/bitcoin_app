@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:bitcoin_app/coin_data.dart';
+import 'dart:io';
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -6,6 +9,39 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
+  DropdownButton<String> getDropdownButton() {
+    List<DropdownMenuItem<String>>? dropdownItems = [];
+    for (int i = 0; i < currenciesList.length; i++) {
+      String currency = currenciesList[i];
+      var newItem = DropdownMenuItem(
+        child: Text(currency),
+        value: currency,
+      );
+      dropdownItems.add(newItem);
+    }
+    return DropdownButton<String>(
+        value: selectedCurrency,
+        items: dropdownItems,
+        onChanged: (value) {
+          setState(() {
+            selectedCurrency = value;
+          });
+        });
+  }
+
+  CupertinoPicker getIosPicker() {
+    List<Text> listitem = [];
+    for (String currency in currenciesList) {
+      listitem.add(Text(currency));
+    }
+    return CupertinoPicker(
+      backgroundColor: Colors.lightBlue,
+      itemExtent: 32.0,
+      onSelectedItemChanged: (selecteIndex) {},
+      children: listitem,
+    );
+  }
+
   String? selectedCurrency = 'USD';
   @override
   Widget build(BuildContext context) {
@@ -43,29 +79,9 @@ class _PriceScreenState extends State<PriceScreen> {
           Container(
             height: 150.0,
             alignment: Alignment.center,
-            padding: EdgeInsets.only(bottom: 30.0),
+            padding: const EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton<String>(
-                value: selectedCurrency,
-                items: const [
-                  DropdownMenuItem(
-                    child: Text('USD'),
-                    value: 'USD',
-                  ),
-                  DropdownMenuItem(
-                    child: Text('EUR'),
-                    value: 'EUR',
-                  ),
-                  DropdownMenuItem(
-                    child: Text('GBP'),
-                    value: 'GBP',
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    selectedCurrency = value;
-                  });
-                }),
+            child: Platform.isIOS ? getIosPicker() : getDropdownButton(),
           ),
         ],
       ),
